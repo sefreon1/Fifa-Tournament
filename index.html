@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fifa Tournering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060914;--card:rgba(255,255,255,.045);--card2:rgba(255,255,255,.08);--line:rgba(255,255,255,.09);--tx:#eef2ff;--mut:#8b95b5;--blue:#2f7bff;--cyan:#22d3ee;--vio:#8b5cf6;--win:#34d399;--draw:#fbbf24;--loss:#fb7185;--r:18px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 Inter,system-ui,sans-serif;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(900px 500px at 8% -10%,rgba(47,123,255,.30),transparent 60%),radial-gradient(800px 500px at 100% 0,rgba(139,92,246,.22),transparent 60%),radial-gradient(700px 400px at 50% 115%,rgba(34,211,238,.13),transparent 60%)}
+h1,h2,h3,.disp{font-family:'Chakra Petch',Inter,sans-serif;letter-spacing:.02em;margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 10px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--vio));display:grid;place-items:center;box-shadow:0 8px 28px rgba(47,123,255,.45)}
+.logo svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand h1{font-size:22px;font-weight:700;line-height:1}
+.brand small{color:var(--mut);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:4px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(8,11,24,.86);backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;color:var(--mut);font:600 11px Inter;padding:7px 2px;border-radius:12px;cursor:pointer}
+nav button svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:#fff;background:linear-gradient(135deg,rgba(47,123,255,.4),rgba(139,92,246,.3));box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+nav button:disabled{opacity:.35;cursor:not-allowed}
+main{padding:10px 0 110px}
+@media(min-width:820px){
+ nav{position:sticky;top:0;bottom:auto;border:1px solid var(--line);border-radius:18px;max-width:640px;margin:6px auto 18px;padding:6px}
+ nav button{flex-direction:row;justify-content:center;font-size:13px;gap:8px;padding:10px 8px}
+ main{padding-bottom:60px}
+}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;backdrop-filter:blur(10px)}
+.card+.card,.stack>*+*{margin-top:14px}
+.sec{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:22px 2px 12px}
+.sec h2{font-size:20px}
+.mut{color:var(--mut)}
+.small{font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:13px 20px;font:600 15px Inter;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--blue),var(--vio));box-shadow:0 8px 24px rgba(47,123,255,.35);transition:transform .12s,filter .12s}
+.btn:hover{filter:brightness(1.1)}.btn:active{transform:scale(.97)}
+.btn.sm{padding:9px 14px;font-size:13px;border-radius:11px}
+.btn.ghost{background:var(--card2);box-shadow:none;border:1px solid var(--line)}
+.btn.danger{background:linear-gradient(135deg,#f43f5e,#be123c);box-shadow:0 8px 24px rgba(244,63,94,.3)}
+.btn.block{width:100%;padding:16px;font-size:16px}
+.btn:disabled{opacity:.4;cursor:not-allowed;filter:none;transform:none}
+.link{background:none;border:0;color:var(--cyan);font:600 13px Inter;cursor:pointer;padding:4px 6px}
+.grid{display:grid;gap:12px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.steppers{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.stepper{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.stepper label{display:block;color:var(--mut);font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:600}
+.stepper .row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.stepper b{font:700 38px 'Chakra Petch';min-width:54px;text-align:center}
+.stepper button{width:46px;height:46px;border-radius:14px;border:1px solid var(--line);background:var(--card2);color:#fff;font-size:24px;cursor:pointer}
+.stepper button:active{transform:scale(.93)}
+.stepper small{display:block;margin-top:6px;color:var(--mut);font-size:12px}
+input[type=text],select{width:100%;background:rgba(0,0,0,.28);border:1px solid var(--line);color:var(--tx);border-radius:11px;padding:10px 12px;font:500 15px Inter;outline:0}
+input[type=text]:focus,select:focus,input.sc:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,123,255,.25)}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),linear-gradient(135deg,var(--mut) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
+select option{background:#0d1226}
+.crest{--c:#2f7bff;flex:none;display:inline-grid;place-items:center;width:34px;height:34px;border-radius:11px;font:700 13px 'Chakra Petch';color:#fff;background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 45%,#000));box-shadow:0 4px 14px color-mix(in srgb,var(--c) 45%,transparent),inset 0 0 0 1px rgba(255,255,255,.25)}
+.crest.lg{width:64px;height:64px;border-radius:20px;font-size:24px}
+.crest.xs{width:24px;height:24px;border-radius:8px;font-size:10px}
+.tcard{display:flex;flex-direction:column;gap:9px}
+.tcard .hd{display:flex;align-items:center;gap:10px}
+.tcard .hd input{font-weight:600}
+.pl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.info{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.pill{background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-size:13px;font-weight:600}
+.pill.err{background:rgba(251,113,133,.14);color:#fecdd3;border-color:rgba(251,113,133,.4)}
+.pill.ok{background:rgba(52,211,153,.12);color:#a7f3d0;border-color:rgba(52,211,153,.35)}
+.bar{height:10px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--vio));border-radius:99px;transition:width .4s}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--mut);border-radius:999px;padding:8px 15px;font:600 13px Inter;cursor:pointer}
+.chip.on{color:#fff;background:linear-gradient(135deg,rgba(47,123,255,.55),rgba(139,92,246,.45));border-color:rgba(255,255,255,.2)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:14px 0}
+.toolbar select{width:auto;min-width:170px}
+.match{display:grid;grid-template-columns:1fr auto 1fr;gap:10px 12px;align-items:center;padding:14px 16px;position:relative}
+.match.next{border-color:rgba(34,211,238,.55);box-shadow:0 0 0 1px rgba(34,211,238,.25),0 10px 40px rgba(34,211,238,.1)}
+.match .no{position:absolute;top:-9px;left:14px;font:600 11px 'Chakra Petch';letter-spacing:.1em;background:#0d1226;border:1px solid var(--line);border-radius:99px;padding:1px 10px;color:var(--mut)}
+.match.next .no{background:var(--cyan);color:#042;border-color:transparent}
+.side{display:flex;align-items:center;gap:10px;min-width:0}
+.side.r{flex-direction:row-reverse;text-align:right}
+.side div{min-width:0}.side b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side small{display:block;color:var(--mut);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.side.w b{color:var(--win)}
+.scorebox{display:flex;align-items:center;gap:8px}
+input.sc{width:56px;height:52px;text-align:center;border-radius:13px;border:1px solid var(--line);background:rgba(0,0,0,.32);color:#fff;font:700 24px 'Chakra Petch';outline:0;-moz-appearance:textfield}
+input.sc::-webkit-outer-spin-button,input.sc::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.res{font:700 30px 'Chakra Petch';letter-spacing:.04em;padding:0 6px}
+.mact{grid-column:1/-1;display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap}
+.tbl{width:100%;border-collapse:separate;border-spacing:0 6px;min-width:520px}
+.tbl th{font:600 11px Inter;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;text-align:center;padding:0 8px 4px}
+.tbl th:nth-child(2),.tbl td:nth-child(2){text-align:left}
+.tbl td{padding:11px 8px;text-align:center;background:var(--card);font-variant-numeric:tabular-nums;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.tbl td:first-child{border-left:1px solid var(--line);border-radius:14px 0 0 14px}
+.tbl td:last-child{border-right:1px solid var(--line);border-radius:0 14px 14px 0}
+.tbl tr.row{cursor:pointer}.tbl tr.row:hover td{background:var(--card2)}
+.tbl td.pts{font:700 18px 'Chakra Petch'}
+.tn{display:flex;align-items:center;gap:10px;font-weight:600}
+.tn small{color:var(--mut);font-weight:400}
+.pos{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:9px;font:700 14px 'Chakra Petch';background:var(--card2)}
+.pos.p1{background:linear-gradient(135deg,#fde047,#d97706);color:#3a2400}
+.pos.p2{background:linear-gradient(135deg,#e5e7eb,#9ca3af);color:#1f2937}
+.pos.p3{background:linear-gradient(135deg,#fdba74,#b45309);color:#2d1500}
+.tbl tr.q td:first-child{box-shadow:inset 3px 0 0 var(--cyan)}
+.dots{display:inline-flex;gap:4px}
+.dot{width:20px;height:20px;border-radius:7px;display:grid;place-items:center;font:700 10px Inter;color:#04130d}
+.dot.W{background:var(--win)}.dot.D{background:var(--draw);color:#2a1d00}.dot.L{background:var(--loss);color:#2b0610}
+.hm{display:none}
+@media(min-width:720px){.hm{display:table-cell}}
+.scroll{overflow-x:auto;margin:0 -16px;padding:0 16px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.tile small{color:var(--mut);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;display:block}
+.tile b{display:block;font:700 26px 'Chakra Petch';margin-top:2px}
+.tile span{color:var(--mut);font-size:12px}
+.tile.hl b{background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.thead{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.thead h2{font-size:30px;line-height:1.1}
+.lr{display:flex;align-items:center;gap:12px;padding:11px 4px;border-bottom:1px solid var(--line)}
+.lr:last-child{border:0}
+.lr .sc2{font:700 17px 'Chakra Petch';margin-left:auto;white-space:nowrap}
+.lr .lbl{color:var(--mut);font-size:12px}
+.svgc{width:100%;height:auto;display:block}
+.svgc text{fill:var(--mut);font:10px Inter}
+.leg{display:flex;gap:14px;font-size:12px;color:var(--mut);margin-top:6px}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.models{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.model{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;color:var(--tx);cursor:pointer;font-family:inherit}
+.model h3{font-size:18px;margin-bottom:4px}
+.model p{margin:0;color:var(--mut);font-size:13px}
+.model.on{border-color:var(--blue);box-shadow:0 0 0 2px rgba(47,123,255,.4),0 12px 40px rgba(47,123,255,.2);background:linear-gradient(135deg,rgba(47,123,255,.16),rgba(139,92,246,.12))}
+.model:disabled{opacity:.4;cursor:not-allowed}
+.opt{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;justify-content:space-between;padding:8px 0}
+.opt+.opt{border-top:1px solid var(--line)}
+.opt>span{font-weight:600}
+.opt select{width:auto;min-width:100px}
+.bracket{display:flex;gap:18px;overflow-x:auto;padding:6px 4px 16px;align-items:stretch}
+.bcol{display:flex;flex-direction:column;justify-content:space-around;gap:14px;min-width:268px;flex:1}
+.bh{font:600 12px 'Chakra Petch';letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);text-align:center;margin-bottom:2px}
+.tie{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;position:relative}
+.tie.done{border-color:rgba(52,211,153,.35)}
+.tie .tl{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--mut);letter-spacing:.08em;text-transform:uppercase;margin:0 4px 6px}
+.tr{display:flex;align-items:center;gap:9px;padding:8px;border-radius:11px;background:rgba(0,0,0,.2)}
+.tr+.tr{margin-top:4px}
+.tr b{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tr em{font:700 18px 'Chakra Petch';font-style:normal;min-width:22px;text-align:right}
+.tr.win{background:rgba(52,211,153,.14);box-shadow:inset 0 0 0 1px rgba(52,211,153,.4)}
+.tr.lose{opacity:.55}
+.tr.empty{color:var(--mut);font-size:13px;font-style:italic;justify-content:center;padding:14px 8px}
+.seed{font:700 11px 'Chakra Petch';color:var(--mut);width:18px;text-align:center}
+.tie.bye{opacity:.65}
+.grow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 4px 0}
+.grow .gl{font-size:12px;color:var(--mut);width:64px}
+.grow input.sc{width:46px;height:40px;font-size:19px;border-radius:10px}
+.grow .gs{font:700 16px 'Chakra Petch'}
+.grow .gs i{font:400 12px Inter;color:var(--mut)}
+.pen{display:none;width:100%!important;font-size:12px!important;padding:7px 10px!important}
+.pen.show{display:block}
+.tfoot{display:flex;justify-content:flex-end;gap:6px;padding-top:8px}
+.champ{position:relative;overflow:hidden;text-align:center;padding:30px 16px;border-radius:24px;border:1px solid rgba(253,224,71,.35);background:radial-gradient(500px 220px at 50% 0,rgba(253,224,71,.2),transparent 70%),var(--card)}
+.champ .cup{width:76px;height:76px;margin:0 auto 6px;stroke:#fde047;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 18px rgba(253,224,71,.6))}
+.champ small{letter-spacing:.3em;font-weight:700;color:#fde047;font-size:12px}
+.champ h2{font-size:38px;margin:6px 0}
+.cf{position:absolute;top:-12px;width:8px;height:14px;opacity:.9;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(340px) rotate(540deg);opacity:0}}
+.podium{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:14px;color:var(--mut);font-size:14px}
+.empty{text-align:center;padding:50px 20px;color:var(--mut)}
+#modal .mback{position:fixed;inset:0;z-index:50;background:rgba(2,4,12,.7);backdrop-filter:blur(6px);display:grid;place-items:center;padding:18px}
+.mbox{width:100%;max-width:480px;background:#0d1226;border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.mbox h3{font-size:22px;margin-bottom:8px}
+.mbox textarea{width:100%;height:150px;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:12px;color:var(--tx);font:12px ui-monospace,monospace;padding:10px;margin-top:10px}
+.macts{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(20px);background:#111936;border:1px solid var(--line);padding:11px 18px;border-radius:14px;font-weight:600;font-size:14px;opacity:0;transition:.25s;z-index:60;pointer-events:none;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+#toast.err{border-color:var(--loss);color:#fecdd3}
+@media(max-width:520px){
+ .match{grid-template-columns:1fr auto 1fr;padding:16px 10px 12px}
+ .side small{display:none}
+ input.sc{width:50px;height:48px}
+ .thead h2{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header class="top">
+  <div class="brand">
+   <div class="logo"><svg viewBox="0 0 24 24"><path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-3.9 3.2l-1.3 6.6A2.6 2.6 0 0 0 4 18c.9 0 1.6-.4 2.2-1.1L8 15h8l1.8 1.9c.6.7 1.3 1.1 2.2 1.1a2.6 2.6 0 0 0 2.5-3.2l-1.3-6.6A4 4 0 0 0 17.3 5z"/></svg></div>
+   <div><h1>FIFA TOURNERING</h1><small>Spela · Tävla · Vinn</small></div>
+  </div>
+  <button class="btn ghost sm" data-act="backup">Backup</button>
+ </header>
+ <nav id="nav"></nav>
+ <main id="main"></main>
+</div>
+<div id="modal"></div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+const KEY='ps5-turnering-v1';
+const COLORS=['#2f7bff','#f43f5e','#22c55e','#f59e0b','#a855f7','#06b6d4','#ec4899','#84cc16','#f97316','#14b8a6','#6366f1','#eab308','#ef4444','#0ea5e9','#d946ef','#10b981'];
+const MAXT=16;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* ---------- state ---------- */
+function fresh(){return{v:1,started:false,view:'setup',cfg:{teamCount:4,perTeam:2,games:3},
+  names:Array.from({length:MAXT},()=>({name:'',players:['','','','']})),teams:[],matches:[],playoff:null}}
+function load(){try{const r=localStorage.getItem(KEY);if(r){const o=JSON.parse(r);if(o&&o.cfg&&Array.isArray(o.names)&&Array.isArray(o.teams)&&Array.isArray(o.matches))return o}}catch(e){}return fresh()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+let S=load();
+const ui={draft:{},edit:new Set(),team:null,filter:'all',fteam:'',po:{model:'cup',n:4,bo:1,fbo:1,bronze:false},cb:null,modal:null};
+
+/* ---------- helpers ---------- */
+const teamById=id=>S.teams.find(t=>t.id===id);
+const tname=id=>id==='BYE'?'Frilott':(teamById(id)||{name:'?'}).name;
+function initials(n){const w=String(n).trim().split(/\s+/).filter(Boolean);if(!w.length)return'?';if(w.length>1)return(w[0][0]+w[1][0]).toUpperCase();return w[0].slice(0,2).toUpperCase()}
+function crest(id,cls){const t=teamById(id);if(!t)return'';return`<span class="crest ${cls||''}" style="--c:${t.color}">${esc(initials(t.name))}</span>`}
+const playersTxt=id=>{const t=teamById(id);return t?t.players.filter(Boolean).join(' · '):''};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function toast(msg,err){const t=$('#toast');t.textContent=msg;t.className='show'+(err?' err':'');clearTimeout(toast.t);toast.t=setTimeout(()=>{t.className=''},2400)}
+function openModal(o){ui.modal=o;renderModal()}
+function closeModal(){ui.modal=null;renderModal()}
+function renderModal(){const m=ui.modal;$('#modal').innerHTML=m?`<div class="mback" data-act="closeModal"><div class="mbox"><h3>${esc(m.title)}</h3>${m.html||''}<div class="macts">${(m.actions||[]).map(a=>`<button class="btn ${a.cls||''} sm" data-act="${a.act}">${esc(a.label)}</button>`).join('')}</div></div></div>`:''}
+function confirmBox(title,text,yesLabel,cb,danger){ui.cb=cb;openModal({title,html:`<p class="mut">${esc(text)}</p>`,actions:[{label:'Avbryt',act:'closeModal',cls:'ghost'},{label:yesLabel,act:'confirmYes',cls:danger?'danger':''}]})}
+
+/* ---------- schedule ---------- */
+function makeSchedule(ids,N){
+  const T=ids.length,arr=shuffle(ids),edges=[];
+  const q=Math.floor(N/(T-1)),r=N%(T-1);
+  for(let c=0;c<q;c++)for(let i=0;i<T;i++)for(let j=i+1;j<T;j++)edges.push([i,j]);
+  if(r>0){
+    for(let k=1;k<=Math.floor(r/2);k++)for(let i=0;i<T;i++)edges.push([i,(i+k)%T]);
+    if(r%2===1)for(let i=0;i<T/2;i++)edges.push([i,i+T/2]);
+  }
+  const last=new Array(T).fill(-100),played=new Array(T).fill(0),home=new Array(T).fill(0);
+  let rem=shuffle(edges);const out=[];
+  while(rem.length){
+    const idx=out.length;let best=0,bs=-Infinity;
+    rem.forEach((e,k)=>{const g=Math.min(idx-last[e[0]],idx-last[e[1]]);const s=Math.min(g,6)*100-(played[e[0]]+played[e[1]])*3+Math.random()*5;if(s>bs){bs=s;best=k}});
+    let [x,y]=rem.splice(best,1)[0];
+    if(home[x]>home[y]||(home[x]===home[y]&&Math.random()<.5))[x,y]=[y,x];
+    home[x]++;last[x]=idx;last[y]=idx;played[x]++;played[y]++;
+    out.push({id:'m'+(idx+1),a:arr[x],b:arr[y],ga:null,gb:null,at:null});
+  }
+  return out;
+}
+
+/* ---------- standings ---------- */
+function computeStats(){
+  const st={};
+  S.teams.forEach(t=>st[t.id]={id:t.id,p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0,hist:[],cs:0,bigW:null,bigL:null,form:[],streakW:0,unbeaten:0});
+  const played=S.matches.map((m,i)=>({m,i})).filter(x=>x.m.ga!=null).sort((x,y)=>(x.m.at||0)-(y.m.at||0)||x.i-y.i).map(x=>x.m);
+  const ap=(id,gf,ga,opp,m)=>{
+    const s=st[id];if(!s)return;
+    s.p++;s.gf+=gf;s.ga+=ga;
+    const res=gf>ga?'W':gf<ga?'L':'D';
+    if(res==='W'){s.w++;s.pts+=3}else if(res==='D'){s.d++;s.pts+=1}else s.l++;
+    if(ga===0)s.cs++;
+    s.hist.push({m,res,gf,ga,opp,cum:s.pts});s.form.push(res);
+    const d=gf-ga;
+    if(res==='W'&&(!s.bigW||d>s.bigW.d||(d===s.bigW.d&&gf>s.bigW.gf)))s.bigW={d,gf,ga,opp};
+    if(res==='L'&&(!s.bigL||-d>s.bigL.d||(-d===s.bigL.d&&ga>s.bigL.ga)))s.bigL={d:-d,gf,ga,opp};
+  };
+  played.forEach(m=>{ap(m.a,m.ga,m.gb,m.b,m);ap(m.b,m.gb,m.ga,m.a,m)});
+  Object.values(st).forEach(s=>{
+    let a=0,b=0,c=0,d=0;
+    s.form.forEach(r=>{if(r==='W'){a++;b++}else{a=0;if(r==='D')b++;else b=0}c=Math.max(c,a);d=Math.max(d,b)});
+    s.streakW=c;s.unbeaten=d;s.gd=s.gf-s.ga;
+  });
+  const rows=Object.values(st).sort((x,y)=>y.pts-x.pts||y.gd-x.gd||y.gf-x.gf||y.w-x.w||tname(x.id).localeCompare(tname(y.id),'sv'));
+  rows.forEach((r,i)=>r.pos=i+1);
+  return{rows,by:st,played};
+}
+const leagueDone=()=>S.matches.length>0&&S.matches.every(m=>m.ga!=null);
+
+/* ---------- playoff engine ---------- */
+function buildTies(model,n,bo,fbo,bronze){
+  const mk=(o,b)=>Object.assign({},o,{bo:b,games:Array(b).fill(null)});
+  if(model==='page')return[
+    mk({id:'q1',label:'Kval 1',rname:'Omgång 1',round:0,a:{seed:1},b:{seed:2}},bo),
+    mk({id:'el',label:'Eliminator',rname:'Omgång 1',round:0,a:{seed:3},b:{seed:4}},bo),
+    mk({id:'q2',label:'Kval 2',rname:'Omgång 2',round:1,a:{loser:'q1'},b:{winner:'el'}},bo),
+    mk({id:'fin',label:'Final',rname:'Final',round:2,a:{winner:'q1'},b:{winner:'q2'}},fbo)];
+  let P=2;while(P<n)P*=2;
+  const R=Math.log2(P);let order=[1,2];
+  while(order.length<P){const m=order.length*2;order=order.flatMap(s=>[s,m+1-s])}
+  const names={1:'Final',2:'Semifinal',4:'Kvartsfinal',8:'Åttondelsfinal'};
+  const ties=[];
+  for(let r=0;r<R;r++){
+    const cnt=P/Math.pow(2,r+1),nm=names[cnt]||'Omgång '+(r+1);
+    for(let i=0;i<cnt;i++){
+      const o={id:`r${r}t${i}`,label:cnt>1?`${nm} ${i+1}`:nm,rname:nm,round:r};
+      if(r===0){o.a={seed:order[2*i]};o.b={seed:order[2*i+1]}}
+      else{o.a={winner:`r${r-1}t${2*i}`};o.b={winner:`r${r-1}t${2*i+1}`}}
+      ties.push(mk(o,cnt===1?fbo:bo));
+    }
+  }
+  if(bronze&&R>=2&&n>=4)ties.push(mk({id:'bronze',label:'Bronsmatch',rname:'Final',round:R-1,a:{loser:`r${R-2}t0`},b:{loser:`r${R-2}t1`}},fbo));
+  return ties;
+}
+function gameWin(g){if(!g||g.a==null||g.b==null)return null;if(g.a>g.b)return'a';if(g.b>g.a)return'b';return g.p||null}
+function series(t){
+  const need=Math.ceil(t.bo/2);let wa=0,wb=0;
+  for(const g of t.games){if(wa>=need||wb>=need)break;const w=gameWin(g);if(!w)break;if(w==='a')wa++;else wb++}
+  return{wa,wb,need};
+}
+function srcTeam(src,po){
+  if(src.seed!=null)return po.seeds[src.seed-1]||'BYE';
+  const t=po.ties.find(x=>x.id===(src.winner||src.loser));if(!t)return null;
+  return src.winner?tieWinner(t,po):tieLoser(t,po);
+}
+const tieTeams=(t,po)=>[srcTeam(t.a,po),srcTeam(t.b,po)];
+function tieWinner(t,po){
+  const [a,b]=tieTeams(t,po);
+  if(a==='BYE')return b;if(b==='BYE')return a;
+  if(!a||!b)return null;
+  const s=series(t);return s.wa>=s.need?a:s.wb>=s.need?b:null;
+}
+function tieLoser(t,po){
+  const [a,b]=tieTeams(t,po);
+  if(!a||!b||a==='BYE'||b==='BYE')return null;
+  const w=tieWinner(t,po);return w?(w===a?b:a):null;
+}
+const finalTie=po=>po.ties.filter(t=>t.id!=='bronze').sort((x,y)=>y.round-x.round)[0];
+function srcLabel(src,po){
+  if(src.seed!=null)return'Seed '+src.seed;
+  const t=po.ties.find(x=>x.id===(src.winner||src.loser));
+  return(src.winner?'Vinnare ':'Förlorare ')+(t?t.label:'');
+}
+function clearDependents(id,po){
+  po.ties.forEach(t=>{
+    if([t.a,t.b].some(s=>s.winner===id||s.loser===id)){t.games=Array(t.bo).fill(null);clearDependents(t.id,po)}
+  });
+}
+function makePlayoff(model,n,bo,fbo,bronze){
+  const rows=computeStats().rows;
+  const seeds=rows.slice(0,n).map(r=>r.id);
+  return{model,n,bo,fbo,bronze,seeds,ties:buildTies(model,n,bo,fbo,bronze)};
+}
+
+/* ---------- views ---------- */
+const ICON={
+ setup:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+ matches:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+ table:'<path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18"/>',
+ playoff:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
+ teams:'<circle cx="9" cy="8" r="3.5"/><path d="M2 21v-1a6 6 0 0 1 12 0v1M16 4.5a3.5 3.5 0 0 1 0 7M22 21v-1a6 6 0 0 0-4-5.6"/>'
+};
+const TABS=[['setup','Upplägg'],['matches','Matcher'],['table','Tabell'],['playoff','Slutspel'],['teams','Lag']];
+
+function stepper(label,key,min,max,hint){
+  const v=S.cfg[key];
+  return`<div class="stepper"><label>${label}</label><div class="row"><button data-act="step" data-k="${key}" data-d="-1" aria-label="Minska">−</button><b>${v}</b><button data-act="step" data-k="${key}" data-d="1" aria-label="Öka">+</button></div><small>${hint}</small></div>`;
+}
+function viewSetup(){
+  if(S.started)return setupLocked();
+  const c=S.cfg,T=c.teamCount,N=c.games,odd=(T*N)%2!==0,total=T*N/2;
+  let teams='';
+  for(let i=0;i<T;i++){
+    const n=S.names[i];
+    teams+=`<div class="card tcard"><div class="hd"><span class="crest" style="--c:${COLORS[i]}">${esc(initials(n.name||'Lag '+(i+1)))}</span><input type="text" placeholder="Lag ${i+1}" value="${esc(n.name)}" maxlength="24" data-f="name" data-i="${i}"></div>
+    <div class="pl">${Array.from({length:c.perTeam},(_,j)=>`<input type="text" placeholder="Spelare ${j+1}" value="${esc(n.players[j]||'')}" maxlength="22" data-f="player" data-i="${i}" data-j="${j}">`).join('')}</div></div>`;
+  }
+  return`<div class="sec" style="margin-top:6px"><h2>Turneringsupplägg</h2></div>
+  <div class="steppers">${stepper('Antal lag','teamCount',2,MAXT,'2–16 lag')}${stepper('Spelare per lag','perTeam',1,4,'1–4 spelare')}${stepper('Matcher per lag','games',1,30,'innan slutspel')}</div>
+  <div class="info"><span class="pill">${T} lag · ${T*c.perTeam} spelare</span><span class="pill ${odd?'err':'ok'}">${odd?'Udda antal lag kräver jämnt antal matcher per lag':total+' matcher totalt · alla lag spelar '+N+' st'}</span></div>
+  <div class="sec"><h2>Lag & spelare</h2></div><div class="grid g3">${teams}</div>
+  <div style="margin-top:22px"><button class="btn block" data-act="gen" ${odd?'disabled':''}>Slumpa spelschema & starta →</button></div>`;
+}
+function setupLocked(){
+  const cards=S.teams.map(t=>`<div class="card tcard" style="cursor:pointer" data-act="openTeam" data-id="${t.id}"><div class="hd">${crest(t.id)}<b>${esc(t.name)}</b></div><div class="mut small">${esc(playersTxt(t.id)||'Inga spelarnamn')}</div></div>`).join('');
+  const done=S.matches.filter(m=>m.ga!=null).length;
+  return`<div class="sec" style="margin-top:6px"><h2>Turneringen pågår</h2></div>
+  <div class="card"><div class="info" style="margin:0"><span class="pill">${S.teams.length} lag</span><span class="pill">${S.cfg.games} matcher per lag</span><span class="pill">${done}/${S.matches.length} matcher spelade</span></div>
+  <p class="mut small">Inställningarna är låsta när schemat är slumpat. Klicka på ett lag för att ändra namn. Vill du börja om väljer du ny turnering – lagnamnen behålls.</p>
+  <div class="chips"><button class="btn danger sm" data-act="newT">Ny turnering</button><button class="btn ghost sm" data-act="backup">Backup / återställ</button></div></div>
+  <div class="sec"><h2>Lag</h2></div><div class="grid g3">${cards}</div>`;
+}
+
+function reorderRemaining(mode,pickId){
+  const played=S.matches.filter(m=>m.ga!=null).sort((x,y)=>(x.at||0)-(y.at||0));
+  let rem=S.matches.filter(m=>m.ga==null);
+  if(!rem.length)return false;
+  if(mode==='pick'){
+    const p=rem.find(m=>m.id===pickId);if(!p)return false;
+    rem=[p].concat(rem.filter(m=>m!==p));
+  }else if(mode==='one'){
+    const p=rem[Math.floor(Math.random()*rem.length)];
+    rem=[p].concat(rem.filter(m=>m!==p));
+  }else{
+    const last={},cnt={};
+    played.forEach((m,i)=>{last[m.a]=i;last[m.b]=i;cnt[m.a]=(cnt[m.a]||0)+1;cnt[m.b]=(cnt[m.b]||0)+1});
+    let pool=shuffle(rem);const out=[];
+    while(pool.length){
+      const idx=played.length+out.length;let best=0,bs=-Infinity;
+      pool.forEach((m,k)=>{const g=Math.min(idx-(last[m.a]==null?-100:last[m.a]),idx-(last[m.b]==null?-100:last[m.b]));const s=Math.min(g,6)*100-((cnt[m.a]||0)+(cnt[m.b]||0))*3+Math.random()*5;if(s>bs){bs=s;best=k}});
+      const m=pool.splice(best,1)[0];out.push(m);
+      last[m.a]=last[m.b]=idx;cnt[m.a]=(cnt[m.a]||0)+1;cnt[m.b]=(cnt[m.b]||0)+1;
+    }
+    rem=out;
+  }
+  S.matches=played.concat(rem);
+  return true;
+}
+function teamCounts(){const c={};S.teams.forEach(t=>c[t.id]=0);S.matches.forEach(m=>{c[m.a]++;c[m.b]++});return c}
+function genEdges(deg0,meet,w){
+  const deg=Object.assign({},deg0),ids=Object.keys(deg),edges=[],add={};let cost=0;
+  const mt=(a,b)=>(meet[a][b]||0)+(add[a+'|'+b]||0);
+  for(;;){
+    const act=ids.filter(i=>deg[i]>0);if(!act.length)break;
+    const md=Math.max(...act.map(i=>deg[i])),xs=act.filter(i=>deg[i]===md),x=xs[Math.floor(Math.random()*xs.length)];
+    const ys=act.filter(i=>i!==x);if(!ys.length)return null;
+    let best=null,bs=-Infinity;
+    ys.forEach(y=>{const s=-mt(x,y)*w+deg[y]*2+Math.random();if(s>bs){bs=s;best=y}});
+    cost+=mt(x,best);edges.push([x,best]);deg[x]--;deg[best]--;
+    add[x+'|'+best]=(add[x+'|'+best]||0)+1;add[best+'|'+x]=add[x+'|'+best];
+  }
+  return{edges,cost};
+}
+function scrambleRest(){
+  const N=S.cfg.games,ids=S.teams.map(t=>t.id);
+  const played=S.matches.filter(m=>m.ga!=null).sort((x,y)=>(x.at||0)-(y.at||0));
+  const unplayed=S.matches.filter(m=>m.ga==null);
+  if(!unplayed.length)return{err:'Alla matcher är spelade'};
+  if(!unplayed.some(m=>m.pin)){reorderRemaining('all');return{ok:true}}
+  const deg={},meet={},home={};
+  ids.forEach(i=>{deg[i]=N;meet[i]={};home[i]=0});
+  const fixed=played.concat(unplayed.filter(m=>m.pin));
+  fixed.forEach(m=>{deg[m.a]--;deg[m.b]--;home[m.a]++;meet[m.a][m.b]=(meet[m.a][m.b]||0)+1;meet[m.b][m.a]=(meet[m.b][m.a]||0)+1});
+  const neg=ids.find(i=>deg[i]<0);
+  if(neg)return{err:`${tname(neg)} har fler än ${N} matcher bland dina val`};
+  const sum=ids.reduce((s,i)=>s+deg[i],0),mx=ids.reduce((b,i)=>deg[i]>deg[b]?i:b,ids[0]);
+  if(deg[mx]>sum-deg[mx])return{err:`${tname(mx)} skulle behöva fler motståndare än det finns kvar. Ändra något av dina val.`};
+  let best=null;
+  for(let k=0;k<45;k++){const r=genEdges(deg,meet,k<40?10:0);if(r&&(!best||r.cost<best.cost))best=r;if(best&&best.cost===0)break}
+  if(!best)return{err:'Det gick inte att fylla ut schemat. Ändra något av dina val.'};
+  let pool=shuffle(best.edges);
+  const base=played.concat(unplayed),out=[],last={},cnt={};
+  ids.forEach(i=>{last[i]=-100;cnt[i]=0});
+  base.forEach((m,pos)=>{
+    let cur=m;
+    if(pos>=played.length&&!m.pin){
+      let bi=0,bs=-Infinity;
+      pool.forEach((e,k)=>{const s=Math.min(Math.min(pos-last[e[0]],pos-last[e[1]]),6)*100-(cnt[e[0]]+cnt[e[1]])*3+Math.random()*5;if(s>bs){bs=s;bi=k}});
+      let [x,y]=pool.splice(bi,1)[0];
+      if(home[x]>home[y]||(home[x]===home[y]&&Math.random()<.5))[x,y]=[y,x];
+      home[x]++;
+      S.seq=(S.seq||10000)+1;
+      cur={id:'m'+S.seq,a:x,b:y,ga:null,gb:null,at:null};
+      Object.keys(ui.draft).filter(d=>d.startsWith('m:'+m.id+':')).forEach(d=>delete ui.draft[d]);
+    }
+    last[cur.a]=last[cur.b]=pos;cnt[cur.a]++;cnt[cur.b]++;out.push(cur);
+  });
+  S.matches=out;
+  return{ok:true};
+}
+function matchCard(m,nextId){
+  const a=m.a,b=m.b,done=m.ga!=null,editing=!done||ui.edit.has(m.id);
+  const wa=done&&m.ga>m.gb,wb=done&&m.gb>m.ga;
+  const val=side=>{const k=`m:${m.id}:${side}`;if(k in ui.draft)return ui.draft[k];const v=side==='a'?m.ga:m.gb;return v==null?'':v};
+  const mid=editing
+   ?`<div class="scorebox"><input class="sc" type="number" inputmode="numeric" min="0" max="99" data-sc="m:${m.id}:a" value="${esc(val('a'))}" aria-label="Mål ${esc(tname(a))}"><span class="mut">–</span><input class="sc" type="number" inputmode="numeric" min="0" max="99" data-sc="m:${m.id}:b" value="${esc(val('b'))}" aria-label="Mål ${esc(tname(b))}"></div>`
+   :`<div class="res">${m.ga} – ${m.gb}</div>`;
+  const act=editing?`<button class="btn sm" data-act="saveMatch" data-id="${m.id}">Spara resultat</button>${done?`<button class="btn ghost sm" data-act="cancelMatch" data-id="${m.id}">Avbryt</button>`:`${m.id!==nextId?`<button class="btn ghost sm" data-act="playNow" data-id="${m.id}">Spela nu</button>`:''}<button class="btn ghost sm" data-act="pick" data-id="${m.id}">Välj lag</button>${m.pin?`<button class="link" data-act="unpin" data-id="${m.id}">Lås upp</button>`:''}`}`:`<button class="link" data-act="editMatch" data-id="${m.id}">Ändra</button>`;
+  return`<div class="card match ${m.id===nextId?'next':''}" id="card-${m.id}"><span class="no">${m.id===nextId?'NÄSTA · ':''}MATCH ${S.matches.indexOf(m)+1}${m.pin&&!done?' · 🔒 VALD':''}</span>
+  <div class="side ${wa?'w':''}">${crest(a)}<div><b>${esc(tname(a))}</b><small>${esc(playersTxt(a))}</small></div></div>${mid}
+  <div class="side r ${wb?'w':''}">${crest(b)}<div><b>${esc(tname(b))}</b><small>${esc(playersTxt(b))}</small></div></div>
+  <div class="mact">${act}</div></div>`;
+}
+function matchTools(){
+  const pins=S.matches.filter(m=>m.ga==null&&m.pin).length,cnt=teamCounts(),N=S.cfg.games;
+  const bad=S.teams.filter(t=>cnt[t.id]!==N);
+  return`<div class="card" style="margin-bottom:14px"><b>Välj matcher själv</b>
+   <p class="mut small" style="margin:4px 0 10px">Tryck <b>Välj lag</b> på en matchplats (t.ex. match 1, 2, 3) och ange vilka lag som ska spela. När du valt klart trycker du <b>Slumpa resten</b> – då fylls övriga platser i slumpat och alla lag får exakt ${N} matcher. <b>Spela nu</b> flyttar en match först.</p>
+   <div class="chips"><button class="btn sm" data-act="rndAll">🔀 Slumpa resten${pins?' ('+pins+' valda)':''}</button><button class="btn ghost sm" data-act="rndOne">🎲 Slumpa nästa match</button>${pins?`<button class="btn ghost sm" data-act="unpinAll">Rensa mina val</button>`:''}</div>
+   ${bad.length?`<div class="info"><span class="pill err">Antal matcher stämmer inte: ${bad.map(t=>esc(t.name)+' '+cnt[t.id]+'/'+N).join(' · ')} – tryck Slumpa resten</span></div>`:''}</div>`;
+}
+function viewMatches(){
+  const done=S.matches.filter(m=>m.ga!=null).length,tot=S.matches.length;
+  const next=S.matches.find(m=>m.ga==null);
+  let list=S.matches.filter(m=>(ui.filter==='all'||(ui.filter==='todo'?m.ga==null:m.ga!=null))&&(!ui.fteam||m.a===ui.fteam||m.b===ui.fteam));
+  const opts=`<option value="">Alla lag</option>`+S.teams.map(t=>`<option value="${t.id}" ${ui.fteam===t.id?'selected':''}>${esc(t.name)}</option>`).join('');
+  const f=(k,l)=>`<button class="chip ${ui.filter===k?'on':''}" data-act="filter" data-k="${k}">${l}</button>`;
+  return`<div class="sec" style="margin-top:6px"><h2>Matcher</h2><span class="mut small">${done} av ${tot} spelade</span></div>
+  <div class="bar"><i style="width:${tot?done/tot*100:0}%"></i></div>
+  ${tot&&done===tot?`<div class="card" style="margin-top:14px;border-color:rgba(52,211,153,.4)"><b>Grundserien är klar! 🎉</b><div class="mut small">Gå vidare till slutspelet.</div><div style="margin-top:10px"><button class="btn sm" data-act="go" data-v="playoff">Till slutspel →</button></div></div>`:''}
+  <div class="toolbar"><div class="chips">${f('all','Alla')}${f('todo','Kommande')}${f('done','Spelade')}</div><select data-f="fteam">${opts}</select></div>
+  ${done<tot?matchTools():''}
+  <div class="stack" style="padding-top:8px">${list.length?list.map(m=>matchCard(m,next&&next.id)).join(''):'<div class="empty">Inga matcher att visa.</div>'}</div>`;
+}
+
+function formDots(arr,n){return`<span class="dots">${arr.slice(-n).map(r=>`<span class="dot ${r}">${r==='W'?'V':r==='D'?'O':'F'}</span>`).join('')}</span>`}
+function viewTable(){
+  const {rows,played}=computeStats();
+  const po=S.playoff;
+  const body=rows.map(r=>`<tr class="row ${po&&po.seeds.includes(r.id)?'q':''}" data-act="openTeam" data-id="${r.id}"><td><span class="pos ${r.pos<=3&&r.p>0?'p'+r.pos:''}">${r.pos}</span></td>
+   <td><div class="tn">${crest(r.id,'xs')}<div>${esc(tname(r.id))}<br><small>${esc(playersTxt(r.id))}</small></div></div></td>
+   <td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td class="hm">${r.gf}:${r.ga}</td><td>${r.gd>0?'+':''}${r.gd}</td><td class="pts">${r.pts}</td><td class="hm">${formDots(r.form,5)}</td></tr>`).join('');
+  let facts='';
+  if(played.length){
+    const goals=played.reduce((s,m)=>s+m.ga+m.gb,0);
+    const mostG=played.reduce((b,m)=>(!b||m.ga+m.gb>b.ga+b.gb)?m:b,null);
+    const bigM=played.reduce((b,m)=>(!b||Math.abs(m.ga-m.gb)>Math.abs(b.ga-b.gb))?m:b,null);
+    const pr=rows.filter(r=>r.p>0);
+    const att=pr.reduce((b,r)=>r.gf>b.gf?r:b,pr[0]),def=pr.reduce((b,r)=>r.ga<b.ga?r:b,pr[0]);
+    const mt=m=>`${tname(m.a)} ${m.ga}–${m.gb} ${tname(m.b)}`;
+    facts=`<div class="sec"><h2>Turneringsfakta</h2></div><div class="tiles">
+     <div class="tile hl"><small>Mål totalt</small><b>${goals}</b><span>${(goals/played.length).toFixed(1)} per match</span></div>
+     <div class="tile"><small>Matcher spelade</small><b>${played.length}</b><span>av ${S.matches.length}</span></div>
+     <div class="tile"><small>Bäst anfall</small><b>${esc(tname(att.id))}</b><span>${att.gf} mål</span></div>
+     <div class="tile"><small>Bäst försvar</small><b>${esc(tname(def.id))}</b><span>${def.ga} insläppta</span></div>
+     <div class="tile"><small>Mest målrika</small><b>${mostG.ga+mostG.gb} mål</b><span>${esc(mt(mostG))}</span></div>
+     <div class="tile"><small>Största seger</small><b>${Math.abs(bigM.ga-bigM.gb)} mål</b><span>${esc(mt(bigM))}</span></div></div>`;
+  }
+  return`<div class="sec" style="margin-top:6px"><h2>Tabell</h2><span class="mut small">Poäng → målskillnad → gjorda mål</span></div>
+  <div class="scroll"><table class="tbl"><thead><tr><th>#</th><th>Lag</th><th>S</th><th>V</th><th>O</th><th>F</th><th class="hm">GM:IM</th><th>+/−</th><th>P</th><th class="hm">Form</th></tr></thead><tbody>${body}</tbody></table></div>
+  <p class="mut small">Klicka på ett lag för statistik. Seger 3 p · oavgjort 1 p.${po?' Markerade lag är klara för slutspel.':''}</p>${facts}`;
+}
+
+function pointsChart(h){
+  if(!h.length)return'<p class="mut small">Inga spelade matcher än.</p>';
+  const W=600,H=170,pl=30,pr=12,pt=12,pb=24,n=h.length,maxY=Math.max(3,h[n-1].cum);
+  const x=i=>pl+i*(W-pl-pr)/n,y=v=>H-pb-(v/maxY)*(H-pt-pb);
+  const pts=[0].concat(h.map(e=>e.cum));
+  const path=pts.map((v,i)=>`${i?'L':'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+  const col={W:'#34d399',D:'#fbbf24',L:'#fb7185'};
+  return`<svg class="svgc" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
+  <line x1="${pl}" x2="${W-pr}" y1="${y(0)}" y2="${y(0)}" stroke="rgba(255,255,255,.12)"/><line x1="${pl}" x2="${W-pr}" y1="${y(maxY)}" y2="${y(maxY)}" stroke="rgba(255,255,255,.08)" stroke-dasharray="3 4"/>
+  <text x="4" y="${y(0)+3}">0</text><text x="4" y="${y(maxY)+3}">${maxY}</text>
+  <path d="${path}" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  ${h.map((e,i)=>`<circle cx="${x(i+1).toFixed(1)}" cy="${y(e.cum).toFixed(1)}" r="5" fill="${col[e.res]}" stroke="#060914" stroke-width="2"/>`).join('')}
+  <text x="${pl}" y="${H-6}">Match 1</text><text x="${W-pr}" y="${H-6}" text-anchor="end">Match ${n}</text></svg>`;
+}
+function goalsChart(h){
+  if(!h.length)return'';
+  const W=600,H=150,pl=8,pb=20,n=h.length,mx=Math.max(1,...h.map(e=>Math.max(e.gf,e.ga)));
+  const gw=(W-pl*2)/n,bw=Math.min(18,gw*.36);
+  const bh=v=>v/mx*(H-pb-14);
+  return`<svg class="svgc" viewBox="0 0 ${W} ${H}"><line x1="0" x2="${W}" y1="${H-pb}" y2="${H-pb}" stroke="rgba(255,255,255,.12)"/>
+  ${h.map((e,i)=>{const cx=pl+gw*i+gw/2;return`<rect x="${(cx-bw-1).toFixed(1)}" y="${(H-pb-bh(e.gf)).toFixed(1)}" width="${bw.toFixed(1)}" height="${bh(e.gf).toFixed(1)}" rx="3" fill="#22d3ee"/><rect x="${(cx+1).toFixed(1)}" y="${(H-pb-bh(e.ga)).toFixed(1)}" width="${bw.toFixed(1)}" height="${bh(e.ga).toFixed(1)}" rx="3" fill="#fb7185"/><text x="${cx.toFixed(1)}" y="${H-6}" text-anchor="middle">${i+1}</text>`}).join('')}</svg>
+  <div class="leg"><span><i style="background:#22d3ee"></i>Gjorda</span><span><i style="background:#fb7185"></i>Insläppta</span></div>`;
+}
+function viewTeams(){
+  if(ui.team&&teamById(ui.team))return teamDetail(ui.team);
+  const {by,rows}=computeStats();
+  return`<div class="sec" style="margin-top:6px"><h2>Lag</h2><span class="mut small">Välj ett lag för full statistik</span></div><div class="grid g3">${
+   S.teams.map(t=>{const s=by[t.id];return`<div class="card tcard" style="cursor:pointer" data-act="openTeam" data-id="${t.id}"><div class="hd">${crest(t.id)}<div><b>${esc(t.name)}</b><div class="mut small">${esc(playersTxt(t.id)||'—')}</div></div><span class="pos ${s.pos<=3&&s.p>0?'p'+s.pos:''}" style="margin-left:auto">${rows.find(r=>r.id===t.id).pos}</span></div>
+   <div class="info" style="margin:0"><span class="pill">${s.pts} p</span><span class="pill">${s.w}V ${s.d}O ${s.l}F</span><span class="pill">${s.gf}:${s.ga}</span></div>${s.form.length?formDots(s.form,5):''}</div>`}).join('')}</div>`;
+}
+function teamDetail(id){
+  const t=teamById(id),{by,rows}=computeStats(),s=by[id],pos=rows.find(r=>r.id===id).pos;
+  const left=S.matches.filter(m=>m.ga==null&&(m.a===id||m.b===id)).length;
+  const avgF=s.p?(s.gf/s.p).toFixed(1):'–',avgA=s.p?(s.ga/s.p).toFixed(1):'–',wr=s.p?Math.round(s.w/s.p*100)+'%':'–';
+  const tile=(l,v,sub,hl)=>`<div class="tile ${hl?'hl':''}"><small>${l}</small><b>${v}</b>${sub?`<span>${sub}</span>`:''}</div>`;
+  const lr=S.matches.filter(m=>m.a===id||m.b===id).map(m=>{
+    const home=m.a===id,opp=home?m.b:m.a,done=m.ga!=null,gf=home?m.ga:m.gb,ga=home?m.gb:m.ga;
+    const res=!done?null:gf>ga?'W':gf<ga?'L':'D';
+    return`<div class="lr">${crest(opp,'xs')}<div><b>${esc(tname(opp))}</b><div class="lbl">Match ${S.matches.indexOf(m)+1} · ${home?'Hemma':'Borta'}</div></div><div class="sc2">${done?gf+' – '+ga:'—'}</div>${res?`<span class="dot ${res}">${res==='W'?'V':res==='D'?'O':'F'}</span>`:'<span class="dot" style="background:var(--card2)"></span>'}</div>`}).join('');
+  let po='';
+  if(S.playoff){
+    const rowsP=[];
+    S.playoff.ties.forEach(ti=>{
+      const [a,b]=tieTeams(ti,S.playoff);if(a!==id&&b!==id)return;
+      const opp=a===id?b:a;
+      ti.games.forEach((g,i)=>{if(!g||g.a==null)return;const gf=a===id?g.a:g.b,ga=a===id?g.b:g.a;const w=gameWin(g);const res=w?((w==='a')===(a===id)?'W':'L'):'D';
+        rowsP.push(`<div class="lr">${opp&&opp!=='BYE'?crest(opp,'xs'):''}<div><b>${esc(tname(opp))}</b><div class="lbl">${esc(ti.label)}${ti.bo>1?' · match '+(i+1):''}</div></div><div class="sc2">${gf} – ${ga}</div><span class="dot ${res}">${res==='W'?'V':res==='D'?'O':'F'}</span></div>`)});
+    });
+    const seed=S.playoff.seeds.indexOf(id)+1;
+    if(seed)po=`<div class="card" style="margin-top:14px"><h3>Slutspel</h3><div class="mut small" style="margin-bottom:6px">Seed ${seed}</div>${rowsP.join('')||'<div class="mut small">Inga spelade slutspelsmatcher än.</div>'}</div>`;
+    else po=`<div class="card" style="margin-top:14px"><h3>Slutspel</h3><div class="mut small">Laget tog sig inte till slutspel.</div></div>`;
+  }
+  return`<div class="sec" style="margin-top:6px"><button class="link" data-act="backTeams">← Alla lag</button></div>
+  <div class="card"><div class="thead">${crest(id,'lg')}<div><h2>${esc(t.name)}</h2><div class="mut">${esc(playersTxt(id)||'Inga spelarnamn')}</div></div><div style="margin-left:auto;text-align:right"><div class="mut small">Placering</div><div class="disp" style="font-size:40px;line-height:1">${pos}</div></div></div>
+  ${s.form.length?`<div style="margin-top:14px"><span class="mut small">Form </span>${formDots(s.form,8)}</div>`:''}</div>
+  <div class="tiles" style="margin-top:14px">${tile('Poäng',s.pts,s.p+' matcher',true)}${tile('V · O · F',`${s.w}·${s.d}·${s.l}`,'vinst '+wr)}${tile('Mål',`${s.gf}:${s.ga}`,'målskillnad '+(s.gd>0?'+':'')+s.gd)}${tile('Snitt gjorda',avgF,'insläppta '+avgA)}${tile('Hållna nollor',s.cs)}${tile('Längsta vinstsvit',s.streakW,'obesegrad '+s.unbeaten)}${tile('Största seger',s.bigW?`${s.bigW.gf}–${s.bigW.ga}`:'–',s.bigW?'mot '+esc(tname(s.bigW.opp)):'')}${tile('Största förlust',s.bigL?`${s.bigL.ga}–${s.bigL.gf}`:'–',s.bigL?'mot '+esc(tname(s.bigL.opp)):'')}${tile('Matcher kvar',left)}</div>
+  <div class="grid g2" style="margin-top:14px"><div class="card"><h3 style="font-size:17px;margin-bottom:8px">Poängutveckling</h3>${pointsChart(s.hist)}</div><div class="card"><h3 style="font-size:17px;margin-bottom:8px">Mål per match</h3>${goalsChart(s.hist)||'<p class="mut small">Inga spelade matcher än.</p>'}</div></div>
+  <div class="card" style="margin-top:14px"><h3>Grundserie</h3>${lr||'<div class="mut small">Inga matcher.</div>'}</div>${po}
+  <div class="card" style="margin-top:14px"><h3 style="font-size:17px;margin-bottom:10px">Redigera lag</h3><input type="text" value="${esc(t.name)}" maxlength="24" data-f="tname" data-id="${id}"><div class="pl" style="margin-top:8px">${Array.from({length:S.cfg.perTeam},(_,j)=>`<input type="text" placeholder="Spelare ${j+1}" value="${esc(t.players[j]||'')}" maxlength="22" data-f="tplayer" data-id="${id}" data-j="${j}">`).join('')}</div></div>`;
+}
+
+/* ----- playoff view ----- */
+function tieRow(id,src,po,win,score){
+  if(!id||id==='BYE')return`<div class="tr empty">${esc(srcLabel(src,po))}</div>`;
+  const seed=po.seeds.indexOf(id)+1;
+  return`<div class="tr ${win===id?'win':win&&win!==id?'lose':''}"><span class="seed">${seed||''}</span>${crest(id,'xs')}<b>${esc(tname(id))}</b><em>${score==null?'':score}</em></div>`;
+}
+function gamesHTML(t,a,b){
+  const s0=series(t),need=s0.need,editing=ui.edit.has('t:'+t.id);
+  let html='',wa=0,wb=0,anyInput=false,anySaved=false;
+  for(let i=0;i<t.bo;i++){
+    if(wa>=need||wb>=need)break;
+    const g=t.games[i],saved=g&&g.a!=null,label=t.bo>1?'Match '+(i+1):'Resultat';
+    if(saved)anySaved=true;
+    if(saved&&!editing){
+      html+=`<div class="grow"><span class="gl">${label}</span><span class="gs">${g.a} – ${g.b}${g.a===g.b&&g.p?` <i>(str. ${esc(tname(g.p==='a'?a:b))})</i>`:''}</span></div>`;
+      const w=gameWin(g);if(w==='a')wa++;else if(w==='b')wb++;
+    }else{
+      anyInput=true;
+      const dv=side=>{const k=`t:${t.id}:${i}:${side}`;if(k in ui.draft)return ui.draft[k];const v=g?g[side]:null;return v==null?'':v};
+      const pk=`t:${t.id}:${i}:p`,pv=pk in ui.draft?ui.draft[pk]:(g&&g.p)||'';
+      const A=dv('a'),B=dv('b'),eq=A!==''&&B!==''&&String(A)===String(B);
+      html+=`<div class="grow"><span class="gl">${label}</span><input class="sc" type="number" inputmode="numeric" min="0" max="99" data-sc="t:${t.id}:${i}:a" value="${esc(A)}"><span class="mut">–</span><input class="sc" type="number" inputmode="numeric" min="0" max="99" data-sc="t:${t.id}:${i}:b" value="${esc(B)}">
+        <select class="pen ${eq?'show':''}" data-sc="${pk}"><option value="">Oavgjort – välj vinnare (straffar)…</option><option value="a" ${pv==='a'?'selected':''}>${esc(tname(a))}</option><option value="b" ${pv==='b'?'selected':''}>${esc(tname(b))}</option></select></div>`;
+      if(!saved)break;
+      const w=gameWin(g);if(w==='a')wa++;else if(w==='b')wb++;
+    }
+  }
+  const foot=anyInput?`<div class="tfoot">${editing?`<button class="btn ghost sm" data-act="cancelTie" data-id="${t.id}">Avbryt</button>`:''}<button class="btn sm" data-act="saveTie" data-id="${t.id}">Spara</button></div>`
+    :anySaved?`<div class="tfoot"><button class="link" data-act="editTie" data-id="${t.id}">Ändra</button></div>`:'';
+  return html+foot;
+}
+function tieHTML(t,po,preview){
+  const [a,b]=tieTeams(t,po);
+  if(a==='BYE'||b==='BYE'){const tm=a==='BYE'?b:a;return`<div class="tie bye"><div class="tl"><span>${esc(t.label)}</span><span>Frilott</span></div>${tieRow(tm,t.a,po,tm,'')}</div>`}
+  const win=tieWinner(t,po),s=series(t);
+  const sc=side=>{if(t.bo>1)return side==='a'?s.wa:s.wb;const g=t.games[0];return g&&g.a!=null?(side==='a'?g.a:g.b):''};
+  const show=!preview&&a&&b;
+  return`<div class="tie ${win?'done':''}"><div class="tl"><span>${esc(t.label)}</span><span>${t.bo>1?'Bäst av '+t.bo:'1 match'}</span></div>
+   ${tieRow(a,t.a,po,win,show?sc('a'):'')}${tieRow(b,t.b,po,win,show?sc('b'):'')}${show?gamesHTML(t,a,b):''}</div>`;
+}
+function bracketHTML(po,preview){
+  const rounds={};po.ties.forEach(t=>(rounds[t.round]=rounds[t.round]||[]).push(t));
+  return`<div class="bracket">${Object.keys(rounds).map(Number).sort((x,y)=>x-y).map(r=>`<div class="bcol"><div class="bh">${esc(rounds[r][0].rname)}</div>${rounds[r].map(t=>tieHTML(t,po,preview)).join('')}</div>`).join('')}</div>`;
+}
+function confetti(){
+  const c=['#fde047','#22d3ee','#8b5cf6','#f43f5e','#34d399','#2f7bff'];
+  return Array.from({length:34},(_,i)=>`<span class="cf" style="left:${(i*2.97+Math.random()*3).toFixed(1)}%;background:${c[i%6]};animation-duration:${(2.4+Math.random()*2.4).toFixed(1)}s;animation-delay:${(Math.random()*2.5).toFixed(1)}s"></span>`).join('');
+}
+function viewPlayoff(){
+  const T=S.teams.length,po=S.playoff;
+  if(po){
+    const f=finalTie(po),champ=tieWinner(f,po);
+    let top='';
+    if(champ){
+      const [fa,fb]=tieTeams(f,po),runner=champ===fa?fb:fa;
+      const br=po.ties.find(t=>t.id==='bronze'),third=br?tieWinner(br,po):null;
+      top=`<div class="champ">${confetti()}<svg class="cup" viewBox="0 0 24 24">${ICON.playoff}</svg><small>MÄSTARE</small><h2>${esc(tname(champ))}</h2><div class="mut">${esc(playersTxt(champ))}</div>
+      <div class="podium"><span>🥈 ${esc(tname(runner))}</span>${third?`<span>🥉 ${esc(tname(third))}</span>`:''}</div></div>`;
+    }
+    return`<div class="sec" style="margin-top:6px"><h2>Slutspel</h2><button class="btn ghost sm" data-act="resetPo">Avbryt slutspel</button></div>${top}
+    <div style="margin-top:14px">${bracketHTML(po,false)}</div><p class="mut small">Seedning baseras på tabellen när slutspelet startade. Oavgjort i slutspel avgörs på straffar – välj vinnare vid resultatet.</p>`;
+  }
+  if(!leagueDone()&&S.matches.every(m=>m.ga==null))
+    return`<div class="empty"><h2 class="disp" style="margin-bottom:8px">Slutspel</h2>Spela några matcher först – slutspelet seedas utifrån tabellen.</div>`;
+  const o=ui.po;
+  if(o.model==='page'){o.n=4}else if(o.model==='final'){o.n=2}else o.n=clamp(o.n,2,Math.min(T,16));
+  const eff=o.model==='final'?'cup':o.model;
+  const preview=makePlayoff(eff,o.n,o.bo,o.fbo,o.bronze&&eff==='cup');
+  const left=S.matches.filter(m=>m.ga==null).length;
+  const M=(k,h,p,dis)=>`<button class="model ${o.model===k?'on':''}" data-act="po" data-k="model" data-v="${k}" ${dis?'disabled':''}><h3>${h}</h3><p>${p}</p></button>`;
+  const bo=(k)=>[1,3,5].map(v=>`<button class="chip ${o[k]===v?'on':''}" data-act="po" data-k="${k}" data-v="${v}">${v===1?'1 match':'Bäst av '+v}</button>`).join('');
+  const nopts=Array.from({length:Math.min(T,16)-1},(_,i)=>i+2).map(n=>`<option value="${n}" ${o.n===n?'selected':''}>${n} lag</option>`).join('');
+  return`<div class="sec" style="margin-top:6px"><h2>Välj slutspelsmodell</h2></div>
+  <div class="models">${M('cup','Utslagscup','Direkt utslagning. 1:an möter sämst, 2:an näst sämst osv. Bye om antalet inte går jämnt upp.')}${M('page','Page-slutspel','Top 4. Bästa paret får en extra chans till final – rättvist för de bästa lagen.',T<4)}${M('final','Direktfinal','Bara etta mot tvåa i grundserien. Kort och spännande.',T<2)}</div>
+  <div class="card" style="margin-top:14px">
+   ${o.model==='cup'?`<div class="opt"><span>Antal lag i slutspel</span><select data-f="pon">${nopts}</select></div>`:''}
+   ${o.model!=='final'?`<div class="opt"><span>Matcher per runda</span><div class="chips">${bo('bo')}</div></div>`:''}
+   <div class="opt"><span>Final</span><div class="chips">${bo('fbo')}</div></div>
+   ${o.model==='cup'&&o.n>=4?`<div class="opt"><span>Bronsmatch</span><button class="chip ${o.bronze?'on':''}" data-act="po" data-k="bronze" data-v="${o.bronze?0:1}">${o.bronze?'På':'Av'}</button></div>`:''}
+  </div>
+  <div class="sec"><h2>Förhandsvisning</h2><span class="mut small">Baserat på tabellen just nu</span></div>${bracketHTML(preview,true)}
+  ${left?`<div class="card" style="border-color:rgba(251,191,36,.4);margin-bottom:14px"><b>${left} grundseriematch${left>1?'er':''} kvar</b><div class="mut small">Tabellen kan ändras. Slutspelet seedas när du startar det.</div></div>`:''}
+  <button class="btn block" data-act="startPo">Starta slutspel →</button>`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  if(!S.started&&S.view!=='setup')S.view='setup';
+  $('#nav').innerHTML=TABS.map(([k,l])=>`<button class="${S.view===k?'on':''}" data-act="go" data-v="${k}" ${!S.started&&k!=='setup'?'disabled':''}><svg viewBox="0 0 24 24">${ICON[k]}</svg>${l}</button>`).join('');
+  const y=window.scrollY;
+  const v={setup:viewSetup,matches:viewMatches,table:viewTable,playoff:viewPlayoff,teams:viewTeams}[S.view]||viewSetup;
+  $('#main').innerHTML=v();
+  window.scrollTo(0,y);
+}
+function go(v,top){S.view=v;if(v!=='teams')ui.team=null;save();render();if(top!==false)window.scrollTo(0,0)}
+
+/* ---------- actions ---------- */
+function actGen(){
+  const c=S.cfg,T=c.teamCount,N=c.games;
+  if((T*N)%2!==0){toast('Udda antal lag kräver jämnt antal matcher per lag',true);return}
+  S.teams=Array.from({length:T},(_,i)=>{const n=S.names[i];return{id:'t'+(i+1),name:(n.name||'').trim()||'Lag '+(i+1),color:COLORS[i],players:n.players.slice(0,c.perTeam).map(p=>(p||'').trim())}});
+  S.matches=makeSchedule(S.teams.map(t=>t.id),N);
+  S.playoff=null;S.started=true;ui.draft={};ui.edit=new Set();ui.filter='all';ui.fteam='';
+  go('matches');toast('Spelschema slumpat – '+S.matches.length+' matcher');
+}
+function readInt(sel){const el=document.querySelector(sel);if(!el)return null;const v=el.value.trim();if(v===''||!/^\d{1,2}$/.test(v))return null;return parseInt(v,10)}
+function saveMatch(id){
+  const m=S.matches.find(x=>x.id===id);if(!m)return;
+  const a=readInt(`[data-sc="m:${id}:a"]`),b=readInt(`[data-sc="m:${id}:b"]`);
+  if(a==null||b==null){toast('Fyll i båda resultaten (0–99)',true);return}
+  m.ga=a;m.gb=b;m.at=Date.now();
+  delete ui.draft[`m:${id}:a`];delete ui.draft[`m:${id}:b`];ui.edit.delete(id);
+  save();render();
+  toast('Resultat sparat ✓');
+  if(leagueDone())setTimeout(()=>toast('Grundserien är klar! 🎉'),1500);
+}
+function saveTie(id){
+  const po=S.playoff,t=po.ties.find(x=>x.id===id);if(!t)return;
+  const [a,b]=tieTeams(t,po);
+  const oldW=tieWinner(t,po),oldL=tieLoser(t,po);
+  const editing=ui.edit.has('t:'+id);
+  const nextGames=t.games.slice();
+  let changed=false;
+  for(let i=0;i<t.bo;i++){
+    const ae=document.querySelector(`[data-sc="t:${id}:${i}:a"]`);if(!ae)continue;
+    const x=readInt(`[data-sc="t:${id}:${i}:a"]`),y=readInt(`[data-sc="t:${id}:${i}:b"]`);
+    if(x==null&&y==null&&!(nextGames[i]&&nextGames[i].a!=null))continue;
+    if(x==null||y==null){toast('Fyll i båda resultaten',true);return}
+    let p=null;
+    if(x===y){const pe=document.querySelector(`[data-sc="t:${id}:${i}:p"]`);p=pe&&pe.value?pe.value:null;if(!p){toast('Oavgjort – välj vinnare efter straffar',true);return}}
+    nextGames[i]={a:x,b:y,p};changed=true;
+  }
+  if(!changed){toast('Fyll i resultat först',true);return}
+  t.games=nextGames;
+  // truncate games after series is decided
+  const s=series(t);let wa=0,wb=0;
+  for(let i=0;i<t.bo;i++){if(wa>=s.need||wb>=s.need){t.games[i]=null;continue}const w=gameWin(t.games[i]);if(w==='a')wa++;else if(w==='b')wb++}
+  const newW=tieWinner(t,po),newL=tieLoser(t,po);
+  if(oldW!==newW||oldL!==newL)clearDependents(id,po);
+  Object.keys(ui.draft).filter(k=>k.startsWith('t:'+id+':')).forEach(k=>delete ui.draft[k]);
+  ui.edit.delete('t:'+id);
+  save();render();toast('Resultat sparat ✓');
+  const f=finalTie(po);if(tieWinner(f,po)&&id===f.id)setTimeout(()=>toast('Vi har en mästare! 🏆'),1200);
+}
+function actStartPo(){
+  const o=ui.po,eff=o.model==='final'?'cup':o.model;
+  S.playoff=makePlayoff(eff,o.n,o.bo,o.fbo,o.bronze&&eff==='cup');
+  ui.edit=new Set();ui.draft={};save();render();window.scrollTo(0,0);toast('Slutspelet har startat!');
+}
+function importData(txt){
+  try{const o=JSON.parse(txt);if(!o||!o.cfg||!Array.isArray(o.names)||!Array.isArray(o.teams)||!Array.isArray(o.matches))throw 0;S=o;ui.draft={};ui.edit=new Set();ui.team=null;save();closeModal();render();toast('Data inläst ✓')}
+  catch(e){toast('Ogiltig backup-text',true)}
+}
+
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');if(!el)return;
+  const act=el.dataset.act,d=el.dataset;
+  if(act==='closeModal'){if(e.target===el||el.tagName==='BUTTON')closeModal();return}
+  switch(act){
+   case'go':go(d.v);break;
+   case'step':{const lim={teamCount:[2,MAXT],perTeam:[1,4],games:[1,30]}[d.k];S.cfg[d.k]=clamp(S.cfg[d.k]+parseInt(d.d,10),lim[0],lim[1]);save();render();break}
+   case'gen':actGen();break;
+   case'newT':confirmBox('Ny turnering?','Alla matcher och resultat raderas. Lagnamn och inställningar behålls.','Ja, börja om',()=>{const n=S.names,c=S.cfg;S=fresh();S.names=n;S.cfg=c;ui.draft={};ui.edit=new Set();ui.team=null;closeModal();save();render();window.scrollTo(0,0)},true);break;
+   case'confirmYes':{const cb=ui.cb;ui.cb=null;if(cb)cb();break}
+   case'filter':ui.filter=d.k;render();break;
+   case'playNow':if(reorderRemaining('pick',d.id)){save();render();window.scrollTo(0,0);toast('Matchen är nu nästa')}break;
+   case'rndOne':if(reorderRemaining('one')){ui.filter='all';ui.fteam='';save();render();window.scrollTo(0,0);toast('Slumpad match är nästa')}break;
+   case'rndAll':{const r=scrambleRest();if(r.err)toast(r.err,true);else{save();render();toast('Resten är slumpad ✓')}break}
+   case'unpin':{const m=S.matches.find(x=>x.id===d.id);if(m){delete m.pin;save();render()}break}
+   case'unpinAll':S.matches.forEach(m=>{if(m.ga==null)delete m.pin});save();render();break;
+   case'pick':{const m=S.matches.find(x=>x.id===d.id);if(!m)break;ui.pairId=m.id;
+     const opt=sel=>S.teams.map(t=>`<option value="${t.id}" ${t.id===sel?'selected':''}>${esc(t.name)}</option>`).join('');
+     openModal({title:'Match '+(S.matches.indexOf(m)+1)+' – välj lag',html:`<div class="stack"><select id="pa">${opt(m.a)}</select><div class="mut small" style="text-align:center">mot</div><select id="pb">${opt(m.b)}</select></div>`,actions:[{label:'Avbryt',act:'closeModal',cls:'ghost'},{label:'Spara val',act:'pairSave'}]});break}
+   case'pairSave':{const m=S.matches.find(x=>x.id===ui.pairId),a=$('#pa').value,b=$('#pb').value;
+     if(!m)break;if(a===b){toast('Välj två olika lag',true);break}
+     m.a=a;m.b=b;m.pin=true;closeModal();save();render();toast('Match vald 🔒');break}
+   case'saveMatch':saveMatch(d.id);break;
+   case'editMatch':ui.edit.add(d.id);render();break;
+   case'cancelMatch':ui.edit.delete(d.id);delete ui.draft[`m:${d.id}:a`];delete ui.draft[`m:${d.id}:b`];render();break;
+   case'openTeam':ui.team=d.id;S.view='teams';save();render();window.scrollTo(0,0);break;
+   case'backTeams':ui.team=null;render();window.scrollTo(0,0);break;
+   case'po':{const k=d.k,v=d.v;if(k==='model')ui.po.model=v;else if(k==='bronze')ui.po.bronze=v==='1';else ui.po[k]=parseInt(v,10);render();break}
+   case'startPo':actStartPo();break;
+   case'resetPo':confirmBox('Avbryta slutspelet?','Alla slutspelsresultat raderas. Grundserien påverkas inte.','Ja, avbryt',()=>{S.playoff=null;ui.edit=new Set();closeModal();save();render()},true);break;
+   case'saveTie':saveTie(d.id);break;
+   case'editTie':ui.edit.add('t:'+d.id);render();break;
+   case'cancelTie':ui.edit.delete('t:'+d.id);Object.keys(ui.draft).filter(k=>k.startsWith('t:'+d.id+':')).forEach(k=>delete ui.draft[k]);render();break;
+   case'backup':openModal({title:'Backup',html:`<p class="mut small">Kopiera texten och spara den någonstans (t.ex. i ett meddelande till dig själv). Klistra in den här igen för att återställa turneringen, även på en annan enhet.</p><textarea id="bk" spellcheck="false">${esc(JSON.stringify(S))}</textarea>`,actions:[{label:'Stäng',act:'closeModal',cls:'ghost'},{label:'Kopiera',act:'bkCopy',cls:'ghost'},{label:'Läs in',act:'bkLoad'}]});break;
+   case'bkCopy':{const ta=$('#bk');ta.select();try{navigator.clipboard.writeText(ta.value).then(()=>toast('Kopierat ✓'),()=>toast('Markera texten och kopiera manuellt'))}catch(x){toast('Markera texten och kopiera manuellt')}break}
+   case'bkLoad':importData($('#bk').value);break;
+  }
+});
+document.addEventListener('input',e=>{
+  const el=e.target,d=el.dataset;
+  if(d.sc){
+    ui.draft[d.sc]=el.value;
+    const row=el.closest('.grow');
+    if(row){const ins=row.querySelectorAll('input.sc'),pen=row.querySelector('.pen');
+      if(pen){const eq=ins[0].value!==''&&ins[1].value!==''&&ins[0].value===ins[1].value;pen.classList.toggle('show',eq)}}
+    return;
+  }
+  if(d.f==='name'){S.names[+d.i].name=el.value;save()}
+  else if(d.f==='player'){S.names[+d.i].players[+d.j]=el.value;save()}
+});
+document.addEventListener('change',e=>{
+  const el=e.target,d=el.dataset;
+  if(d.sc&&el.tagName==='SELECT'){ui.draft[d.sc]=el.value;return}
+  if(d.f==='fteam'){ui.fteam=el.value;render()}
+  else if(d.f==='pon'){ui.po.n=parseInt(el.value,10);render()}
+  else if(d.f==='tname'){const t=teamById(d.id);if(t){t.name=el.value.trim()||t.name;save();render()}}
+  else if(d.f==='tplayer'){const t=teamById(d.id);if(t){t.players[+d.j]=el.value.trim();save();render()}}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const sc=e.target.dataset&&e.target.dataset.sc;if(!sc)return;
+  const p=sc.split(':');
+  if(p[0]==='m')saveMatch(p[1]);else if(p[0]==='t')saveTie(p[1]);
+});
+render();
+</script>
+</body>
+</html>
